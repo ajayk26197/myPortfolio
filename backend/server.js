@@ -23,16 +23,25 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "Portfolio API is running",
-        endpoints: {
-            auth: "/api/auth",
-            projects: "/api/projects",
-            contact: "/api/contact",
-        },
+if (process.env.NODE_ENV === "production") {
+    const frontendPath = join(__dirname, "..", "frontend", "dist");
+    app.use(express.static(frontendPath));
+
+    app.use((req, res) => {
+        res.sendFile(join(frontendPath, "index.html"));
     });
-});
+} else {
+    app.get("/", (req, res) => {
+        res.json({
+            message: "Portfolio API is running",
+            endpoints: {
+                auth: "/api/auth",
+                projects: "/api/projects",
+                contact: "/api/contact",
+            },
+        });
+    });
+}
 
 const defaultProjects = [
     {
