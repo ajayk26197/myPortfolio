@@ -19,3 +19,4 @@ This is my personal portfolio website built with:
 3. Start the application:
    - Backend: `npm run dev` in the root folder.
    - Frontend: `npm run dev` in the `frontend/` folder.
+
