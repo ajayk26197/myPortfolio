@@ -23,25 +23,16 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
 
-if (process.env.NODE_ENV === "production") {
-    const frontendPath = join(__dirname, "..", "frontend", "dist");
-    app.use(express.static(frontendPath));
-
-    app.use((req, res) => {
-        res.sendFile(join(frontendPath, "index.html"));
+app.get("/", (req, res) => {
+    res.json({
+        message: "Portfolio API is running",
+        endpoints: {
+            auth: "/api/auth",
+            projects: "/api/projects",
+            contact: "/api/contact",
+        },
     });
-} else {
-    app.get("/", (req, res) => {
-        res.json({
-            message: "Portfolio API is running",
-            endpoints: {
-                auth: "/api/auth",
-                projects: "/api/projects",
-                contact: "/api/contact",
-            },
-        });
-    });
-}
+});
 
 const defaultProjects = [
     {
@@ -113,20 +104,14 @@ const seedProjectsIfEmpty = async () => {
     }
 };
 
-const PORT = process.env.PORT || 5000;
+// Connect to DB for Serverless execution
+connectDB().then(() => seedProjectsIfEmpty()).catch(console.error);
 
-const startServer = async () => {
-    try {
-        await connectDB();
-        await seedProjectsIfEmpty();
+if (process.env.NODE_ENV !== "production") {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
 
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.error("Server startup failed:", error.message);
-        process.exit(1);
-    }
-};
-
-startServer();
+export default app;
