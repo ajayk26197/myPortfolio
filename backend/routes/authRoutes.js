@@ -9,7 +9,7 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const adminUser = process.env.ADMIN_USERNAME || 'ajay';
+    const adminUser = process.env.ADMIN_USERNAME || 'ajaypatel';
     const adminPass = process.env.ADMIN_PASSWORD || 'ajay@110';
 
     if (!username || !password) {
