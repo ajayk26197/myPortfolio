@@ -48,7 +48,7 @@ function AnimatedDroppingTitle() {
   )
 }
 
-const API_BASE = 'http://localhost:5001/api'
+const API_BASE = '/api'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })

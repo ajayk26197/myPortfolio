@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SectionTitle from './SectionTitle';
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = '/api';
 
 const EMOJI_OPTIONS = ['🚀', '💻', '🛒', '🤖', '📊', '🧠', '💬', '📝', '⚡', '🎮', '🌐', '📱', '🔒', '📦'];
 

@@ -9,7 +9,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminLogin from './components/AdminLogin';
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = '/api';
 
 function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
