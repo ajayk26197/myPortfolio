@@ -1,6 +1,7 @@
 import React from 'react'
 import Button from './Button'
 import SocialLinks from './SocialLinks'
+import SpotifyPlaylist from './SpotifyPlaylist'
 
 export default function Hero() {
   return (
@@ -68,7 +69,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right — Avatar */}
+          {/* Right — Avatar on top, Music Card below */}
           <div className="hero-visual">
             <div className="hero-avatar-wrapper">
               <div className="hero-orbit-ring">
@@ -84,6 +85,8 @@ export default function Hero() {
                 <SocialLinks variant="bar" />
               </div>
             </div>
+
+            <SpotifyPlaylist />
           </div>
 
         </div>
