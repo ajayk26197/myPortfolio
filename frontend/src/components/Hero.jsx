@@ -1,9 +1,42 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Button from './Button'
 import SocialLinks from './SocialLinks'
 import SpotifyPlaylist from './SpotifyPlaylist'
+import resumePdf from '../assets/resume.pdf'
 
 export default function Hero() {
+  const [downloading, setDownloading] = useState(false)
+
+  const handleDownloadResume = async (e) => {
+    e.preventDefault()
+    if (downloading) return
+    setDownloading(true)
+    try {
+      const fileUrl = resumePdf || '/resume.pdf'
+      const response = await fetch(fileUrl)
+      if (!response.ok) throw new Error('Failed to fetch resume file')
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = 'Ajay_Kumar_Resume.pdf'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+    } catch (err) {
+      console.error('Blob download failed, using fallback:', err)
+      const link = document.createElement('a')
+      link.href = '/resume.pdf'
+      link.download = 'Ajay_Kumar_Resume.pdf'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   return (
     <section id="home" className="hero">
       {/* Background orbs */}
@@ -61,10 +94,11 @@ export default function Hero() {
                 id="hero-resume-btn"
                 variant="outline"
                 as="a"
-                href="#"
-                download
+                href={resumePdf}
+                download="Ajay_Kumar_Resume.pdf"
+                onClick={handleDownloadResume}
               >
-                Resume ↓
+                {downloading ? 'Downloading...' : 'Resume ↓'}
               </Button>
             </div>
           </div>
