@@ -120,7 +120,10 @@ export default function Hero() {
               </div>
             </div>
 
-            <SpotifyPlaylist />
+            {/* Music card below avatar */}
+            <div className="compact-music-card-wrap">
+              <SpotifyPlaylist />
+            </div>
           </div>
 
         </div>

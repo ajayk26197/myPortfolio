@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 
 const navLinks = ['Home', 'About', 'Projects', 'Experience']
 
@@ -6,6 +6,12 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState('Home')
   const [menuOpen, setMenuOpen] = useState(false)
+
+  // Random portfolio view count, stable across re-renders
+  const viewCount = useMemo(() => {
+    const n = Math.floor(Math.random() * 9000) + 1000
+    return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -72,13 +78,19 @@ export default function Navbar() {
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-inner">
 
-        {/* LEFT — AJ logo */}
-        <div
-          className="navbar-logo"
-          onClick={() => scrollTo('Home')}
-          style={{ cursor: 'pointer' }}
-        >
-          AJ
+        {/* LEFT — AJ logo + Portfolio View */}
+        <div className="navbar-left-group">
+          <div
+            className="navbar-logo"
+            onClick={() => scrollTo('Home')}
+            style={{ cursor: 'pointer' }}
+          >
+            AJ
+          </div>
+          <button id="navbar-portfolio-view-btn" className="btn btn-ghost navbar-btn-ghost" type="button">
+            Portfolio View
+            <span className="portfolio-view-count">{viewCount}</span>
+          </button>
         </div>
 
         {/* MIDDLE — nav links pill (desktop) */}
@@ -95,8 +107,14 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* RIGHT — Contact CTA button + Hamburger */}
+        {/* RIGHT — Follow + Contact CTA + Hamburger */}
         <div className="navbar-right-group">
+          <div className="navbar-actions">
+            <button id="navbar-follow-btn" className="btn btn-follow navbar-btn-follow" type="button">
+              + Follow
+            </button>
+          </div>
+
           <button
             id="navbar-contact-btn"
             className="navbar-cta"
@@ -138,6 +156,15 @@ export default function Navbar() {
               {link}
             </button>
           ))}
+          <div className="mobile-menu-actions">
+            <button id="mobile-portfolio-view-btn" className="btn btn-ghost" type="button">
+              Portfolio View
+              <span className="portfolio-view-count">{viewCount}</span>
+            </button>
+            <button id="mobile-follow-btn" className="btn btn-follow" type="button">
+              + Follow
+            </button>
+          </div>
           <button
             className="mobile-nav-cta"
             onClick={() => scrollTo('Contact')}

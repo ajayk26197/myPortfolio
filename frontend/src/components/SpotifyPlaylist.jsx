@@ -38,6 +38,7 @@ export default function SpotifyPlaylist() {
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
+  const cardRef = useRef(null);
   const isFirstMount = useRef(true);
 
   const currentTrack = TRACKS[trackIndex];
@@ -90,7 +91,13 @@ export default function SpotifyPlaylist() {
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
+      const t = audioRef.current.currentTime;
+      setCurrentTime(t);
+      // Update bottom progress strip
+      const d = audioRef.current.duration || 30;
+      if (cardRef.current) {
+        cardRef.current.style.setProperty('--scrubber-pct', `${(t / d) * 100}%`);
+      }
     }
   };
 
@@ -123,7 +130,7 @@ export default function SpotifyPlaylist() {
   };
 
   return (
-    <div className="compact-music-card">
+    <div className="compact-music-card" ref={cardRef}>
       <audio
         ref={audioRef}
         src={currentTrack.src}

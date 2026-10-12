@@ -260,6 +260,10 @@ section {
 
 /* ── RIGHT: CTA button ── */
 .navbar-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
   padding: 10px 26px;
   border-radius: var(--radius-full);
   background: var(--gradient-main);
@@ -271,6 +275,8 @@ section {
   transition: var(--transition);
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
   font-family: var(--font-sans);
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .navbar-cta:hover {
@@ -527,39 +533,179 @@ section {
   display: flex;
   gap: 18px;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-start;
 }
 
+/* Vertical divider between CTA group and extra btns */
+.hero-actions-divider {
+  display: inline-block;
+  width: 1px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 1px;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* Portfolio View + Follow always on one row */
+.hero-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+
+/* View count badge inside Portfolio View btn */
+.portfolio-view-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.3px;
+  margin-left: 6px;
+  line-height: 1.4;
+  transition: background 0.22s ease, color 0.22s ease;
+}
+
+.btn-ghost:hover .portfolio-view-count {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* Ghost — Portfolio View */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.18s ease;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Follow pill */
+.btn-follow {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  border-radius: var(--radius-full, 999px);
+  border: 1.5px solid rgba(249, 115, 22, 0.45);
+  background: rgba(249, 115, 22, 0.08);
+  color: #fb923c;
+  cursor: pointer;
+  transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.18s ease, box-shadow 0.22s ease;
+  white-space: nowrap;
+}
+
+.btn-follow:hover {
+  background: rgba(249, 115, 22, 0.18);
+  border-color: rgba(249, 115, 22, 0.75);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.3);
+  transform: translateY(-1px);
+}
 
 /* ===========================
-   COMPACT MUSIC CARD (1 TRACK AT A TIME)
+   COMPACT MUSIC CARD — mini 46px tall (1/3 of original 138px)
 =========================== */
+.compact-music-card-wrap {
+  align-self: center;
+  position: relative;
+  z-index: 15;
+  width: 270px;   /* explicit so flex row knows this element's footprint */
+  height: 46px;   /* match card height — removes phantom gap */
+  flex-shrink: 0;
+}
+
 .compact-music-card {
   width: 270px;
   max-width: 100%;
-  height: 138px;
+  height: 46px;               /* 1/3 of 138px */
   position: relative;
   z-index: 10;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
   box-sizing: border-box;
-  padding: 9px 12px;
+  padding: 0 10px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;        /* single horizontal row */
+  align-items: center;
+  gap: 8px;
   background: linear-gradient(165deg, rgba(20, 24, 33, 0.96), rgba(11, 14, 20, 0.98));
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 18px rgba(249, 115, 22, 0.12);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(249, 115, 22, 0.12);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   user-select: none;
 }
 
 .compact-music-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 24px rgba(249, 115, 22, 0.2);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6), 0 0 18px rgba(249, 115, 22, 0.22);
   border-color: rgba(249, 115, 22, 0.35);
+}
+
+/* Hide parts that don't fit in 46px row */
+.compact-music-card .compact-header,
+.compact-music-card .compact-scrubber-wrapper,
+.compact-music-card .compact-mute-btn {
+  display: none;
+}
+
+/* Track row fills remaining space */
+.compact-music-card .compact-track-single {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  margin: 0;
+}
+
+/* Controls sit inline on the right */
+.compact-music-card .compact-controls {
+  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+/* Thin scrubber line at bottom edge of card */
+.compact-music-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--scrubber-pct, 0%);
+  height: 2px;
+  background: #f97316;
+  border-radius: 0 2px 0 0;
+  transition: width 0.3s linear;
 }
 
 /* Header bar */
@@ -862,7 +1008,7 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 65px;
+  gap: 95px;    /* extra breathing room so zoomed avatar (scale 1.275) never touches the card */
   position: relative;
   margin-right: 0;
   margin-top: 24px;
@@ -3016,10 +3162,57 @@ section {
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
 }
 
+.navbar-left-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .navbar-right-group {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* Navbar Portfolio View + Follow buttons */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.navbar-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: var(--radius-full);
+  box-sizing: border-box;
+}
+
+.navbar-btn-follow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: var(--radius-full);
+  box-sizing: border-box;
+}
+
+.mobile-menu-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
 }
 
 /* ===========================
@@ -3067,6 +3260,15 @@ section {
 
   /* Hide desktop CTA button, show hamburger */
   .navbar-cta {
+    display: none;
+  }
+
+  /* Hide desktop navbar actions */
+  .navbar-actions {
+    display: none;
+  }
+
+  .navbar-left-group .navbar-btn-ghost {
     display: none;
   }
 
