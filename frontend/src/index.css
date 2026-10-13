@@ -1008,7 +1008,7 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 95px;    /* extra breathing room so zoomed avatar (scale 1.275) never touches the card */
+  gap: 95px;
   position: relative;
   margin-right: 0;
   margin-top: 24px;
@@ -1043,7 +1043,6 @@ section {
 }
 
 .hero-avatar-wrapper:hover .hero-avatar-placeholder {
-  transform: scale(1.275);
   border-color: rgba(251, 146, 60, 0.95);
   box-shadow:
     0 0 80px rgba(249, 115, 22, 0.65),
@@ -1056,10 +1055,6 @@ section {
   filter: drop-shadow(0 0 25px rgba(249, 115, 22, 0.45));
   transition: transform 0.3s ease;
   user-select: none;
-}
-
-.hero-avatar-wrapper:hover .avatar-icon {
-  transform: scale(1.25);
 }
 
 .hero-orbit-ring {
@@ -1160,7 +1155,6 @@ section {
 }
 
 .hero-avatar-wrapper:hover .hero-social-bar {
-  transform: translateX(-50%) translateY(45px);
   border-color: rgba(249, 115, 22, 0.5);
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(249, 115, 22, 0.35);
 }
