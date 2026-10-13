@@ -7,6 +7,7 @@ import connectDB from "./db.js";
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import viewRoutes from "./routes/viewRoutes.js";
 import Project from "./models/Project.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/views", viewRoutes);
 
 app.get("/", (req, res) => {
     res.json({

@@ -581,6 +581,20 @@ section {
   color: #fff;
 }
 
+/* Spinner state while the real count loads */
+.portfolio-view-loading {
+  width: 13px;
+  height: 13px;
+  min-width: unset;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  background: transparent !important;
+}
+
+
 /* Ghost — Portfolio View */
 .btn-ghost {
   display: inline-flex;
@@ -640,15 +654,18 @@ section {
   align-self: center;
   position: relative;
   z-index: 15;
-  width: 270px;   /* explicit so flex row knows this element's footprint */
-  height: 46px;   /* match card height — removes phantom gap */
+  width: 270px;
+  /* explicit so flex row knows this element's footprint */
+  height: 46px;
+  /* match card height — removes phantom gap */
   flex-shrink: 0;
 }
 
 .compact-music-card {
   width: 270px;
   max-width: 100%;
-  height: 46px;               /* 1/3 of 138px */
+  height: 46px;
+  /* 1/3 of 138px */
   position: relative;
   z-index: 10;
   border-radius: 10px;
@@ -657,7 +674,8 @@ section {
   box-sizing: border-box;
   padding: 0 10px;
   display: flex;
-  flex-direction: row;        /* single horizontal row */
+  flex-direction: row;
+  /* single horizontal row */
   align-items: center;
   gap: 8px;
   background: linear-gradient(165deg, rgba(20, 24, 33, 0.96), rgba(11, 14, 20, 0.98));

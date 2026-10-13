@@ -1,17 +1,77 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 const navLinks = ['Home', 'About', 'Projects', 'Experience']
+const API_BASE = '/api'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState('Home')
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // Random portfolio view count, stable across re-renders
-  const viewCount = useMemo(() => {
-    const n = Math.floor(Math.random() * 9000) + 1000
-    return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`
+  // Real view counter state
+  const [viewCount, setViewCount] = useState(null)       // raw number from API
+  const [displayCount, setDisplayCount] = useState('…')  // formatted animated value
+  const [viewLoading, setViewLoading] = useState(true)
+  const animTimerRef = useRef(null)
+
+  // Hit the counter once per tab session (sessionStorage clears on tab close).
+  // The hasHit ref prevents React StrictMode's double-mount from firing twice.
+  const hasHit = useRef(false)
+  useEffect(() => {
+    const SESSION_KEY = 'pv_counted'
+    if (hasHit.current) return          // StrictMode guard
+    hasHit.current = true
+
+    if (sessionStorage.getItem(SESSION_KEY)) {
+      // Already counted this tab session — just fetch the current count quietly
+      fetch(`${API_BASE}/views`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) setViewCount(data.count)
+          else setDisplayCount('—')
+        })
+        .catch(() => setDisplayCount('—'))
+        .finally(() => setViewLoading(false))
+      return
+    }
+
+    // First load of this tab — increment
+    fetch(`${API_BASE}/views/hit`, { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          sessionStorage.setItem(SESSION_KEY, '1')
+          setViewCount(data.count)
+        } else {
+          setDisplayCount('—')
+        }
+      })
+      .catch(() => setDisplayCount('—'))
+      .finally(() => setViewLoading(false))
   }, [])
+
+  // Animate the count up when viewCount arrives
+  useEffect(() => {
+    if (viewCount === null) return
+    const target = viewCount
+    const duration = 1200
+    const steps = 40
+    const stepTime = duration / steps
+    let step = 0
+    const tick = () => {
+      step++
+      const current = Math.min(Math.round((target / steps) * step), target)
+      const formatted = current >= 1000
+        ? `${(current / 1000).toFixed(1)}k`
+        : `${current}`
+      setDisplayCount(formatted)
+      if (step < steps) {
+        animTimerRef.current = setTimeout(tick, stepTime)
+      }
+    }
+    tick()
+    return () => clearTimeout(animTimerRef.current)
+  }, [viewCount])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -74,6 +134,12 @@ export default function Navbar() {
     }
   }
 
+  const countBadge = viewLoading ? (
+    <span className="portfolio-view-count portfolio-view-loading" />
+  ) : (
+    <span className="portfolio-view-count">{displayCount}</span>
+  )
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-inner">
@@ -88,8 +154,8 @@ export default function Navbar() {
             AJ
           </div>
           <button id="navbar-portfolio-view-btn" className="btn btn-ghost navbar-btn-ghost" type="button">
-            Portfolio View
-            <span className="portfolio-view-count">{viewCount}</span>
+            Portfolio Views
+            {countBadge}
           </button>
         </div>
 
@@ -159,7 +225,7 @@ export default function Navbar() {
           <div className="mobile-menu-actions">
             <button id="mobile-portfolio-view-btn" className="btn btn-ghost" type="button">
               Portfolio View
-              <span className="portfolio-view-count">{viewCount}</span>
+              {countBadge}
             </button>
             <button id="mobile-follow-btn" className="btn btn-follow" type="button">
               + Follow
