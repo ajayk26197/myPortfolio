@@ -17,16 +17,31 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+// Only initialize Firebase if config is available
+const hasFirebaseConfig = firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId;
 
-googleProvider.setCustomParameters({
-    prompt: "select_account",
-});
+let app = null;
+let auth = null;
+let googleProvider = null;
 
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
-export const logoutUser = () => signOut(auth);
+if (hasFirebaseConfig) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+} else {
+    console.warn("Firebase config missing. Auth features will be disabled.");
+}
+
+export const signInWithGoogle = () => {
+    if (!auth || !googleProvider) throw new Error("Firebase not configured");
+    return signInWithPopup(auth, googleProvider);
+};
+
+export const logoutUser = () => {
+    if (!auth) throw new Error("Firebase not configured");
+    return signOut(auth);
+};
 
 export { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged };
 export default app;
