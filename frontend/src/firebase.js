@@ -8,13 +8,13 @@ import {
 } from "firebase/auth";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAxYNIB61Lt87macr_-s6tFMQ-G6sNbX4c",
-    authDomain: "my-portfolio-917d4.firebaseapp.com",
-    projectId: "my-portfolio-917d4",
-    storageBucket: "my-portfolio-917d4.firebasestorage.app",
-    messagingSenderId: "616259939437",
-    appId: "1:616259939437:web:3435a54a06e43120d1e364",
-    measurementId: "G-QMQW32X6JV",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -30,4 +30,3 @@ export const logoutUser = () => signOut(auth);
 
 export { auth, googleProvider, signInWithPopup, signOut, onAuthStateChanged };
 export default app;
-
