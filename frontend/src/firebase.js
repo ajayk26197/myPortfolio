@@ -17,8 +17,14 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Only initialize Firebase if config is available
-const hasFirebaseConfig = firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId;
+// Only initialize Firebase if config is validly provided
+const hasFirebaseConfig = Boolean(
+    firebaseConfig.apiKey &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId &&
+    firebaseConfig.apiKey !== "undefined" &&
+    firebaseConfig.apiKey !== ""
+);
 
 let app = null;
 let auth = null;

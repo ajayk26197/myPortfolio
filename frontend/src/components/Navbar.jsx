@@ -87,6 +87,8 @@ export default function Navbar() {
 
   // Firebase auth state & follow status sync
   useEffect(() => {
+    if (!auth) return
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
       if (user) {
@@ -103,21 +105,27 @@ export default function Navbar() {
       }
     })
 
-    return () => unsubscribe()
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe()
+    }
   }, [])
 
   const handleFollow = async () => {
     // No unfollow option: if already following or loading, do nothing
     if (followLoading || isFollowing) return
+    if (!auth) {
+      alert('Authentication is currently not configured. Please configure Firebase environment variables.')
+      return
+    }
     setFollowLoading(true)
 
     try {
-      let user = auth.currentUser
+      let user = auth?.currentUser
 
       // If user is not yet logged in, prompt Google popup
       if (!user) {
         const result = await signInWithGoogle()
-        user = result.user
+        user = result?.user
         setCurrentUser(user)
       }
 

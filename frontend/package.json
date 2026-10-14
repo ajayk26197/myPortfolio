@@ -13,7 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "firebase": "^13.0.0",
+    "firebase": "^10.14.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
