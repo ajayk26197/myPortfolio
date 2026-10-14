@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { auth, signInWithGoogle, onAuthStateChanged } from '../firebase'
+import { followUser, checkFollowStatus } from '../services/api'
 
 const navLinks = ['Home', 'About', 'Projects', 'Experience']
 const API_BASE = '/api'
@@ -14,28 +16,38 @@ export default function Navbar() {
   const [viewLoading, setViewLoading] = useState(true)
   const animTimerRef = useRef(null)
 
-  // Hit the counter once per tab session (sessionStorage clears on tab close).
-  // The hasHit ref prevents React StrictMode's double-mount from firing twice.
+  // Follower state
+  const [currentUser, setCurrentUser] = useState(null)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [followLoading, setFollowLoading] = useState(false)
+
+  // Count once per session: refreshes do not increment the counter.
+  // The hasHit ref prevents React StrictMode's dev double-mount.
   const hasHit = useRef(false)
   useEffect(() => {
-    const SESSION_KEY = 'pv_counted'
-    if (hasHit.current) return          // StrictMode guard
+    if (hasHit.current) return
     hasHit.current = true
 
-    if (sessionStorage.getItem(SESSION_KEY)) {
-      // Already counted this tab session — just fetch the current count quietly
+    const SESSION_KEY = 'portfolio_view_counted'
+    const alreadyCountedInSession = sessionStorage.getItem(SESSION_KEY)
+
+    if (alreadyCountedInSession) {
+      // Refresh / already visited in this session: fetch count quietly without incrementing
       fetch(`${API_BASE}/views`)
         .then(r => r.json())
         .then(data => {
-          if (data.success) setViewCount(data.count)
-          else setDisplayCount('—')
+          if (data.success) {
+            setViewCount(data.count)
+          } else {
+            setDisplayCount('—')
+          }
         })
         .catch(() => setDisplayCount('—'))
         .finally(() => setViewLoading(false))
       return
     }
 
-    // First load of this tab — increment
+    // New session: increment counter once
     fetch(`${API_BASE}/views/hit`, { method: 'POST' })
       .then(r => r.json())
       .then(data => {
@@ -72,6 +84,69 @@ export default function Navbar() {
     tick()
     return () => clearTimeout(animTimerRef.current)
   }, [viewCount])
+
+  // Firebase auth state & follow status sync
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user)
+      if (user) {
+        try {
+          const res = await checkFollowStatus(user.uid)
+          if (res.success) {
+            setIsFollowing(res.isFollowing)
+          }
+        } catch (err) {
+          console.error('Failed to check follow status:', err)
+        }
+      } else {
+        setIsFollowing(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
+  const handleFollow = async () => {
+    // No unfollow option: if already following or loading, do nothing
+    if (followLoading || isFollowing) return
+    setFollowLoading(true)
+
+    try {
+      let user = auth.currentUser
+
+      // If user is not yet logged in, prompt Google popup
+      if (!user) {
+        const result = await signInWithGoogle()
+        user = result.user
+        setCurrentUser(user)
+      }
+
+      if (!user) {
+        setFollowLoading(false)
+        return
+      }
+
+      // Add follower in MongoDB
+      const res = await followUser({
+        uid: user.uid,
+        name: user.displayName || user.email?.split('@')[0] || 'Follower',
+        email: user.email,
+        photoURL: user.photoURL || '',
+      })
+      if (res.success) {
+        setIsFollowing(true)
+      }
+    } catch (err) {
+      if (
+        err?.code !== 'auth/popup-closed-by-user' &&
+        err?.code !== 'auth/cancelled-popup-request'
+      ) {
+        console.error('Follow action failed:', err)
+      }
+    } finally {
+      setFollowLoading(false)
+    }
+  }
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -140,6 +215,40 @@ export default function Navbar() {
     <span className="portfolio-view-count">{displayCount}</span>
   )
 
+  const renderFollowBtnContent = () => {
+    if (followLoading) {
+      return (
+        <>
+          <span className="follow-btn-spinner" />
+          <span>Following...</span>
+        </>
+      )
+    }
+
+    if (isFollowing) {
+      return (
+        <>
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ flexShrink: 0 }}
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>Following</span>
+        </>
+      )
+    }
+
+    return <span>+ Follow</span>
+  }
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-inner">
@@ -153,8 +262,17 @@ export default function Navbar() {
           >
             AJ
           </div>
-          <button id="navbar-portfolio-view-btn" className="btn btn-ghost navbar-btn-ghost" type="button">
-            Portfolio Views
+          <button
+            id="navbar-portfolio-view-btn"
+            className="btn btn-ghost navbar-btn-ghost"
+            type="button"
+            title="Total portfolio visits"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.85 }}>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span>Portfolio Views</span>
             {countBadge}
           </button>
         </div>
@@ -176,8 +294,21 @@ export default function Navbar() {
         {/* RIGHT — Follow + Contact CTA + Hamburger */}
         <div className="navbar-right-group">
           <div className="navbar-actions">
-            <button id="navbar-follow-btn" className="btn btn-follow navbar-btn-follow" type="button">
-              + Follow
+            <button
+              id="navbar-follow-btn"
+              className={`btn btn-follow navbar-btn-follow ${isFollowing ? 'following' : ''}`}
+              type="button"
+              onClick={handleFollow}
+              disabled={followLoading}
+              title={
+                isFollowing
+                  ? 'Following Ajay'
+                  : currentUser
+                  ? `Follow as ${currentUser.displayName || currentUser.email}`
+                  : 'Sign in with Google to follow'
+              }
+            >
+              {renderFollowBtnContent()}
             </button>
           </div>
 
@@ -223,12 +354,34 @@ export default function Navbar() {
             </button>
           ))}
           <div className="mobile-menu-actions">
-            <button id="mobile-portfolio-view-btn" className="btn btn-ghost" type="button">
-              Portfolio View
+            <button
+              id="mobile-portfolio-view-btn"
+              className="btn btn-ghost"
+              type="button"
+              title="Total portfolio visits"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.85 }}>
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <span>Portfolio Views</span>
               {countBadge}
             </button>
-            <button id="mobile-follow-btn" className="btn btn-follow" type="button">
-              + Follow
+            <button
+              id="mobile-follow-btn"
+              className={`btn btn-follow ${isFollowing ? 'following' : ''}`}
+              type="button"
+              onClick={handleFollow}
+              disabled={followLoading}
+              title={
+                isFollowing
+                  ? 'Following Ajay'
+                  : currentUser
+                  ? `Follow as ${currentUser.displayName || currentUser.email}`
+                  : 'Sign in with Google to follow'
+              }
+            >
+              {renderFollowBtnContent()}
             </button>
           </div>
           <button

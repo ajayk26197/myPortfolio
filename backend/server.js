@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import viewRoutes from "./routes/viewRoutes.js";
+import followerRoutes from "./routes/followerRoutes.js";
 import Project from "./models/Project.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/views", viewRoutes);
+app.use("/api/followers", followerRoutes);
 
 app.get("/", (req, res) => {
     res.json({
@@ -32,6 +34,8 @@ app.get("/", (req, res) => {
             auth: "/api/auth",
             projects: "/api/projects",
             contact: "/api/contact",
+            views: "/api/views",
+            followers: "/api/followers",
         },
     });
 });
