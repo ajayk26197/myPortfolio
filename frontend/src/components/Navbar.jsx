@@ -145,7 +145,9 @@ export default function Navbar() {
         setIsFollowing(true)
       }
     } catch (err) {
-      if (
+      if (err?.code === 'auth/popup-blocked') {
+        alert('Google Sign-In was blocked by your browser popup blocker. Please allow popups for this site in your address bar and try again.')
+      } else if (
         err?.code !== 'auth/popup-closed-by-user' &&
         err?.code !== 'auth/cancelled-popup-request'
       ) {
